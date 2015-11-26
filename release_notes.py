@@ -103,7 +103,7 @@ log("Extracting commits since tag:" + tagname + ", since timestamp: " + timestam
 commitMessages = getCommitsSince(timestamp)
 
 log("Filtering STA-[0-9]+ issues")
-issues = set(re.findall("STA-[0-9]+",commitMessages))
+issues = set(re.findall("[sS][Tt][Aa]-[0-9]+",commitMessages))
 
 log("Connecting to JIRA to retrieve the issue titles.")
 jira = authenticateInJira()
@@ -129,8 +129,8 @@ for type in issueMap.keys():
     print("### " + type + "s")
   for issue in issueMap[type]:
     if jira != None:
-      print(" - " + issue + " - " + jira.issue(issue).fields.summary)
+      print(" - " + issue.upper() + " - " + jira.issue(issue).fields.summary)
     else:
-      print(" - " + issue + " - " + "https://jira.hybris.com/browse/" + issue)
+      print(" - " + issue.upper() + " - " + "https://jira.hybris.com/browse/" + issue)
 
 sys.exit(0)
