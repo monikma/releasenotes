@@ -21,10 +21,16 @@ Default configuration can be changed in release_notes.py below initial descripti
 ## Example usage:
 
 ```
+# help
 ./release_notes.py --help
+# long format
 ./release_notes.py --releases 2 --output markdown
 ./release_notes.py --releases 1 --output html
-./release_notes.py  # uses default settings (1 release, markdown output)
+./release_notes.py --releases 2 --output markdown
+# short format
+./release_notes.py -r 1 -o html
+# using default settings
+./release_notes.py
 ```
 
 ## Example output:
