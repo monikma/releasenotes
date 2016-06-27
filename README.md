@@ -4,7 +4,7 @@ This script is for outputting the release notes based on JIRA for copy-pasting.
 
 # Requirements
 
-You need to install https://pypi.python.org/pypi/jira first. Tested for Python 3.4.3 (won't work for Python 2.x).
+You need to install https://pypi.python.org/pypi/jira first. Tested for Python 3.5.1 and Python 2.7.11.
 
 # Quick start
 

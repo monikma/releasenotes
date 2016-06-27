@@ -13,7 +13,7 @@ from jira import JIRA
 # 
 # https://github.com/monami555/releasenotes
 #
-# You need to install https://pypi.python.org/pypi/jira first. Tested for Python 3.4.3 (won't work for Python 2.x).
+# You need to install https://pypi.python.org/pypi/jira first. Tested for Python 3.5.1 and Python 2.7.11.
 #
 # Put this file in your git repository root directory and add to global gitignore. Run it. 
 # Pay attention that it picks up the right tag, if not, play with the tagsBack argument (--help displays usage info).
@@ -42,11 +42,19 @@ from jira import JIRA
 #
 ######################################################################################################
 
+#### Check python version:
+try:
+  raw_input
+except: #if it is Python 3.x
+  input = input;
+else:  #if it is Python 2.x
+  input = raw_input;
+
 #### General Settings
 defaultTagsBack = 1;
 defaultOutputType = "markdown" # markdown or html
 jiraServer = "https://jira.hybris.com" # full url to jira
-issuePrefixRegex = "[Yy][Mm][Kk][Tt]-"; # jira group prefix as regex
+issuePrefixRegex = "[Ss][Tt][Aa]-"; # jira group prefix as regex
 gitMode = "ref" # ref or log. use log if you experience errors in tag selection
 
 ######################################################################################################
@@ -73,16 +81,20 @@ def getTagnameAndTimeStampTagsBack(tagsBack):
     taginfologs = re.findall('(v.*)', tagInfo)
   else:
     ## for-each-ref approach
-    tagInfo = executeGit("for-each-ref --sort='-*committerdate' --format=\"%(*committerdate:iso) (tag: %(refname:short))\" refs/tags --count=" + tagsBack);
+    tagInfo = executeGit("for-each-ref --sort='-*committerdate' --format=\"%(*committerdate:iso) (tag: %(refname:short))\" refs/tags --count=" + str(tagsBack));
     taginfologs = re.findall('\(tag\:(.+?)[,\)]', tagInfo)
 
   timestamps = re.findall('[0-9-:]+ [0-9-:]+ [0-9-:+]+', tagInfo)
-  timestamp = timestamps[len(timestamps)-1]
-  tagname = taginfologs[len(taginfologs)-1]
-  return {
-    'tagname': tagname.strip(),
-    'timestamp': timestamp
-  };
+  if (len(timestamps)>0):
+    timestamp = timestamps[len(timestamps)-1]
+    tagname = taginfologs[len(taginfologs)-1]
+    return {
+      'tagname': tagname.strip(),
+      'timestamp': timestamp
+    };
+  else:
+    print("No tags found in the current project.");
+    sys.exit(1);
   
 # returns all commit messages since given timestamp, as one string
 def getCommitsSince(timestamp):
@@ -90,7 +102,7 @@ def getCommitsSince(timestamp):
   
 # authenticates the user in JIRA and returns the Jira object
 def authenticateInJira():
-  user = raw_input('Enter your JIRA username (Enter to skip): ')
+  user = input('Enter your JIRA username (Enter to skip): ')
   if len(user)==0:
     return None
   password = getpass.getpass('Enter your JIRA password (will be transferred insecurely): ')
@@ -98,10 +110,10 @@ def authenticateInJira():
 
 def usage():
   print("")
-  print("Usage: releasenotes* --releases [number_of_releases_back] --output [markdown|html]")
+  print("Usage: releasenotes* --tags [number_of_tags_back] --output [markdown|html]")
   print("")
   print("Options:")
-  print("-r or --releases [number_of_releases_back]: How many tags back should be considered. This is determined by number of tags in the master branch. Default value is 1 (since last release).")
+  print("-t or --tags [number_of_tags_back]: How many tags back should be considered. This is determined by number of tags in repository. Default value is 1 (since last tag).")
   print("-o or --output [type]  markdown or html output style")
   print("")
   print("  *)the script must be started in the directory of your git repository")
@@ -109,7 +121,7 @@ def usage():
   sys.exit(0)
 
 def createReleaseNotes(tagsBack, outputType):
-  log("Looking for commits since " + tagsBack + " last tags")
+  log("Looking for commits since " + str(tagsBack) + " last tags")
   targetTag = getTagnameAndTimeStampTagsBack(tagsBack);
 
   timestamp = targetTag['timestamp']
@@ -174,7 +186,7 @@ def main(argv):
   output = defaultOutputType
   tagsback = defaultTagsBack
   try:                                
-      opts, args = getopt.getopt(argv, "h:r:o", ["help", "releases=", "output="])
+      opts, args = getopt.getopt(argv, "h:t:o", ["help", "tags=", "output="])
   except getopt.GetoptError:
       usage()
       sys.exit(2)
@@ -185,7 +197,7 @@ def main(argv):
       # elif opt == '-d':
       #     global _debug
       #     _debug = 1
-      elif opt in ("-r", "--releases"):
+      elif opt in ("-t", "--tags"):
           tagsback = arg 
       elif opt in ("-o", "--output"):
           output = arg 
