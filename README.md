@@ -49,14 +49,14 @@ Enter your JIRA password (will be transferred insecurely):
 Printing release notes:
 
  ### Sub-tasks
-  - STA-2222 - Throw inside finally (Spot check)
+  - [STA-2222](https://jira.hybris.com/browse/STA-2222) - Throw inside finally (Spot check)
 
  ### User stories
-  - STA-2224 - Fortify findings for Servcie SDK - Compulsory
+  - [STA-2224](https://jira.hybris.com/browse/STA-2224) - Fortify findings for Servcie SDK - Compulsory
 
  ### Tasks
-  - STA-2225 - Update Dependencies for service sdk and services
+  - [STA-2225](https://jira.hybris.com/browse/STA-2225) - Update Dependencies for service sdk and services
 
  ### Bugs
- - STA-2228 - raml-rewriter: rewrite of baseUri / fails
+ - [STA-2228](https://jira.hybris.com/browse/STA-2228) - raml-rewriter: rewrite of baseUri / fails
 ```
