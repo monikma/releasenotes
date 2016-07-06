@@ -8,8 +8,10 @@ You need to install https://pypi.python.org/pypi/jira first. Tested for Python 3
 
 # Quick start
 
-Put this file in your git repository root directory and add to global gitignore. Run it. 
-Pay attention that it picks up the right tag, if not, play with the release argument (--help displays usage info).
+Put this file in your git repository root directory and add to global `.gitignore` if you don't want to commit it. Run it.
+
+
+Pay attention that it picks up the right tag, if not, play with the `tags` argument (--help displays usage info).
 
 # Configuration
 
@@ -24,11 +26,11 @@ Default configuration can be changed in release_notes.py below initial descripti
 # help
 ./release_notes.py --help
 # long format
-./release_notes.py --releases 2 --output markdown
-./release_notes.py --releases 1 --output html
-./release_notes.py --releases 2 --output markdown
+./release_notes.py --tags 2 --output markdown
+./release_notes.py --tags 1 --output html
+./release_notes.py --tags 2 --output markdown
 # short format
-./release_notes.py -r 1 -o html
+./release_notes.py -t 1 -o html
 # using default settings
 ./release_notes.py
 ```
@@ -36,7 +38,7 @@ Default configuration can be changed in release_notes.py below initial descripti
 ## Example output:
 
 ```
-./release_notes.py --releases 2 --output markdown
+./release_notes.py --tags 2 --output markdown
 
 [INFO] Looking for commits since 1 last tags
 [INFO] Extracting commits since tag: 4.5.0, since timestamp: 2015-11-05 13:14:46 +0100.

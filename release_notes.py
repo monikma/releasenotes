@@ -10,13 +10,16 @@ from jira import JIRA
 
 ######################################################################################################
 # This script is for outputting the release notes for copy-pasting.
-# 
+#
 # https://github.com/monami555/releasenotes
 #
 # You need to install https://pypi.python.org/pypi/jira first. Tested for Python 3.5.1 and Python 2.7.11.
 #
-# Put this file in your git repository root directory and add to global gitignore. Run it. 
-# Pay attention that it picks up the right tag, if not, play with the tagsBack argument (--help displays usage info).
+# Put this file in your git repository root directory and add to global `.gitignore` if you don't
+# want to commit it. Run it.
+#
+# Pay attention that it picks up the right tag, if not, play with the `tags` argument (--help
+# displays usage info).
 #
 # Example output:
 #
@@ -63,7 +66,7 @@ def log(str):
   print("[INFO] " + str)
 
 # executes given Git command in the current directory (do not include "git" in the front)
-def executeGit(command): 
+def executeGit(command):
   pr = subprocess.Popen("git "+command, cwd = '.' , shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE )
   (out, error) = pr.communicate()
   if not error:
@@ -74,7 +77,7 @@ def executeGit(command):
 
 # returns the tag name of the tag tagsBack tags back
 def getTagnameAndTimeStampTagsBack(tagsBack):
-  
+
   if gitMode == "log":
     ## log approach
     tagInfo = executeGit("log --tags --simplify-by-decoration --pretty=\"format:%ai %d\" -n" + tagsBack)
@@ -95,11 +98,11 @@ def getTagnameAndTimeStampTagsBack(tagsBack):
   else:
     print("No tags found in the current project.");
     sys.exit(1);
-  
+
 # returns all commit messages since given timestamp, as one string
 def getCommitsSince(timestamp):
   return executeGit("log --pretty=\"%s\r%n\" --since=\""+timestamp+"\"")
-  
+
 # authenticates the user in JIRA and returns the Jira object
 def authenticateInJira():
   user = input('Enter your JIRA username (Enter to skip): ')
@@ -133,6 +136,8 @@ def createReleaseNotes(tagsBack, outputType):
   log("Filtering "+issuePrefixRegex+"[0-9]+ issues")
   issues = set(re.findall(issuePrefixRegex + "[0-9]+",commitMessages))
 
+  # TODO remove case sensitive duplicates from "issues" (case should not matter)
+
   log("Connecting to JIRA to retrieve the issue titles.")
   jira = authenticateInJira()
 
@@ -148,8 +153,8 @@ def createReleaseNotes(tagsBack, outputType):
     issueMap[type].append(issue)
 
   print("Printing release notes:")
-   
-  if outputType == "markdown":  
+
+  if outputType == "markdown":
     for type in issueMap.keys():
       print("")
       if type=="User story":
@@ -158,9 +163,11 @@ def createReleaseNotes(tagsBack, outputType):
         print("### " + type + "s")
       for issue in issueMap[type]:
         if jira != None:
-          print(" - " + issue.upper() + " - " + jira.issue(issue).fields.summary)
+          print(" - [" + issue.upper() + "](" + jiraServer + "/browse/" + issue + ") - " +
+                jira.issue(issue).fields.summary)
         else:
-          print(" - " + issue.upper() + " - " + jiraServer + "/browse/" + issue)
+          print(" - [" + issue.upper() + "](" + jiraServer + "/browse/" + issue + ") - " +
+                jiraServer + "/browse/" + issue)
 
   else:
     for type in issueMap.keys():
@@ -176,16 +183,16 @@ def createReleaseNotes(tagsBack, outputType):
           print("    <li>[<a href='" + jiraServer + "/browse/" + issue + "'>" + issue.upper() + "</a>] - " + jira.issue(issue).fields.summary + "</li>")
         else:
           print("    <li>[<a href='" + jiraServer + "/browse/" + issue + "'>" + issue + "</a>]</li>")
-      
+
       print("</ul>")
   sys.exit(0)
 
 
 #### main program:
-def main(argv):                          
+def main(argv):
   output = defaultOutputType
   tagsback = defaultTagsBack
-  try:                                
+  try:
       opts, args = getopt.getopt(argv, "h:t:o", ["help", "tags=", "output="])
   except getopt.GetoptError:
       usage()
@@ -198,11 +205,11 @@ def main(argv):
       #     global _debug
       #     _debug = 1
       elif opt in ("-t", "--tags"):
-          tagsback = arg 
+          tagsback = arg
       elif opt in ("-o", "--output"):
-          output = arg 
+          output = arg
 
-  # source = "".join(args)               
+  # source = "".join(args)
   # print "source", source
   # print "output", output
   # print "tagsback", tagsback
